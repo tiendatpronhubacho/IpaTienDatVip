@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+        TDPAT200 /* Patches in Resources */ = {isa = PBXBuildFile; fileRef = TDPAT100 /* Patches */; };
+        D1A600000000000000000002 /* SandboxDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A600000000000000000001 /* SandboxDiagnosticsView.swift */; };
 		3105A200 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3105A020; };
 		3106Z200 /* worse_query.m in Sources */ = {isa = PBXBuildFile; fileRef = 3106Z100; };
 		EEEE1111FFFF2222AAAA3333 /* WQCombined.m in Sources */ = {isa = PBXBuildFile; fileRef = DDDD1111EEEE2222FFFF3333 /* WQCombined.m */; };
@@ -75,6 +77,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+        TDPAT100 /* Patches */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ../Patches; sourceTree = "<group>"; };
+        D1A600000000000000000001 /* SandboxDiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = views/SandboxDiagnosticsView.swift; sourceTree = "<group>"; };
 		3105A010 /* TienDat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TienDat.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3105A020 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		3105A021 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -187,11 +191,13 @@
 		3105A401 /* ThreeOneOSFive */ = {
 			isa = PBXGroup;
 			children = (
+                TDPAT100 /* Patches */,
 			AAAA1111BBBB2222CCCC3333 /* PatchEngine.swift */,
 				3105A050 /* ThreeOneOSFive-Bridging-Header.h */,
 				3105A060 /* Info.plist */,
 				3105A020 /* App.swift */,
 				3105A021 /* ContentView.swift */,
+				D1A600000000000000000001 /* SandboxDiagnosticsView.swift */,
 				3105A403 /* exploit */,
 				3105A404 /* views */,
 				3105A405 /* helpers */,
@@ -371,6 +377,7 @@ PatchEngine.swift */,
 			buildActionMask = 2147483647;
 			files = (
 				3105A211,
+                TDPAT200 /* Patches in Resources */,
 				3105A228,
 				3105P201,
 				3105P202,
@@ -429,6 +436,7 @@ PatchEngine.swift */,
 				3105B220,
 				3105B221,
 				3105B222,
+                D1A600000000000000000002 /* SandboxDiagnosticsView.swift in Sources */,
 				3105C200,
 				3105C201,
 				3105C202,

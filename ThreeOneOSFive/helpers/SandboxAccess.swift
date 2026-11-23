@@ -27,15 +27,20 @@ enum SandboxAccess {
     static var backend: SandboxBackend {
         let v = AppInfo.versionTuple
         if ExploitSupportPolicy.supportsKernelExploit(
-            major: v.major, minor: v.minor, patch: v.patch, isA10: AppInfo.isA10
+            major: v.major,
+            minor: v.minor,
+            patch: v.patch,
+            isA10: AppInfo.isA10
         ) {
             return .kernel
         }
+        if ExploitSupportPolicy.supportsWorseQuery(
+            major: v.major, minor: v.minor, patch: v.patch, build: AppInfo.osBuild
+        ) {
+            return .worseQuery
+        }
         if ExploitSupportPolicy.supportsBadQuery(major: v.major, minor: v.minor, patch: v.patch) {
             return .badQuery
-        }
-        if ExploitSupportPolicy.supportsWorseQuery(major: v.major, minor: v.minor, patch: v.patch) {
-            return .worseQuery
         }
         return .unsupported
     }
@@ -133,7 +138,11 @@ enum SandboxAccess {
             // builds do not grant the broad Application parent, even when the
             // worse_query exchange itself is functioning correctly.
             log("sandbox: App Group URL is \(groupURL.path)")
-            if grant(path: groupURL.path, writable: true) >= 0 {
+            let groupHandle = grant(path: groupURL.path, writable: true)
+            if groupHandle >= 0 {
+                // Probe only verifies the grant; release the retained handle
+                // so repeated diagnostics do not pin cached token references.
+                release(groupHandle)
                 log("sandbox: worse_query App Group probe succeeded")
                 return true
             }
@@ -141,6 +150,8 @@ enum SandboxAccess {
             let targetPath = ContainerStore.appDataRoot
             let handle = grant(path: targetPath, writable: true)
             if handle >= 0 {
+                // The probe does not retain this grant for a later operation.
+                release(handle)
                 log("sandbox: worse_query granted access to \(targetPath)")
                 return true
             }

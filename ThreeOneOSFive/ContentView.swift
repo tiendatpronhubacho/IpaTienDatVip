@@ -303,10 +303,8 @@ struct FeaturesView: View {
     @Environment(\.scenePhase) private var scenePhase
     @ObservedObject var patchStore: PatchProjectStore
     @EnvironmentObject private var appState: AppState
-    @State private var patchOperationBusy = false
-    @State private var patchMessage = "READY -- SELECT A PATCH"
     
-    @State private var currentScreen = 0 
+    @State private var currentScreen = 0
 
     var body: some View {
         ZStack {
@@ -363,9 +361,21 @@ struct FeaturesView: View {
                 }
             }
         }
+        // === THÊM 2 ĐOẠN NÀY ===
+        .alert(item: $patchStore.alert) { alert in
+            Alert(
+                title: Text(alert.titleKey == "common.done" ? "Thành công" : "Lỗi"),
+                message: Text(alert.message(language: .vietnamese)), // hoặc dùng AppLanguage hiện tại của bạn
+                dismissButton: .default(Text("OK")) {
+                    patchStore.alert = nil
+                }
+            )
+        }
+        .onChange(of: patchStore.isBusy) { busy in
+            // optional: có thể thêm haptic hoặc log
+        }
         .onChange(of: scenePhase) { phase in
-            guard phase == .active, !patchOperationBusy else { return }
-            patchMessage = "READY -- SELECT A PATCH"
+            guard phase == .active else { return }
         }
     }
 
@@ -433,17 +443,19 @@ struct FeaturesView: View {
             }
             
             HStack(spacing: 8) {
-                Circle().fill(patchMessage.localizedCaseInsensitiveContains("successful") ? .green : .white.opacity(0.5)).frame(width: 7, height: 7)
-                Text(patchOperationBusy ? "PROCESSING PATCH…" : patchMessage)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.8))
-                Spacer()
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
-            .background(Color.white.opacity(0.1), in: Capsule())
-            .overlay(Capsule().stroke(Color.white.opacity(0.3), lineWidth: 0.5))
-            .padding(.top, 10)
+    Circle()
+        .fill(patchStore.isBusy ? .orange : (patchStore.activePatchIDs.isEmpty ? .white.opacity(0.5) : .green))
+        .frame(width: 7, height: 7)
+    
+    Text(patchStore.isBusy ? "PROCESSING PATCH…" : (patchStore.activePatchIDs.isEmpty ? "READY -- SELECT A PATCH" : "PATCH APPLIED"))
+        .font(.system(size: 11, weight: .bold, design: .rounded))
+        .foregroundStyle(.white.opacity(0.85))
+}
+.padding(.horizontal, 14)
+.padding(.vertical, 12)
+.background(Color.white.opacity(0.1), in: Capsule())
+.overlay(Capsule().stroke(Color.white.opacity(0.3), lineWidth: 0.5))
+.padding(.top, 10)
         }
     }
 
@@ -461,6 +473,11 @@ struct FeaturesView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(name).font(.system(size: 16, weight: .black, design: .rounded)).foregroundStyle(.white)
                 Text(target).font(.system(size: 10, weight: .bold, design: .rounded)).foregroundStyle(.white.opacity(0.7))
+                if item == nil {
+                    Text("Thiếu gói patch — kiểm tra mạng / Sandbox Diagnostics")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(.red.opacity(0.9))
+                }
             }
             
             Spacer()
@@ -493,7 +510,8 @@ struct FeaturesView: View {
 // MARK: - CÀI ĐẶT (SETTINGS VIEW)
 struct SettingsView: View {
     @ObservedObject private var audioManager = AudioManager.shared
-    
+    @State private var showSandboxDiagnostics = false
+
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
@@ -553,6 +571,21 @@ struct SettingsView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 12) {
+                        Text("CHẨN ĐOÁN SANDBOX").font(.caption).foregroundStyle(.white.opacity(0.5))
+                        Button { showSandboxDiagnostics = true } label: {
+                            HStack {
+                                Image(systemName: "stethoscope").foregroundStyle(.white)
+                                Text("Sandbox Diagnostics").foregroundStyle(.white)
+                                Spacer()
+                                Image(systemName: "chevron.right").foregroundStyle(.white.opacity(0.6))
+                            }
+                            .padding()
+                            .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.3), lineWidth: 0.5))
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 12) {
                         Text("THIẾT BỊ").font(.caption).foregroundStyle(.white.opacity(0.5))
                         VStack(spacing: 0) {
                             HStack {
@@ -577,6 +610,10 @@ struct SettingsView: View {
                 }
                 .padding(.horizontal, 20)
             }
+        }
+        .sheet(isPresented: $showSandboxDiagnostics) {
+            NavigationStack { SandboxDiagnosticsView() }
+                .preferredColorScheme(.dark)
         }
     }
 }
