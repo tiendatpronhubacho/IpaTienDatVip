@@ -365,15 +365,26 @@ final class LicenseManager: ObservableObject {
     }
 
     private func getOrCreateSigningKey() throws -> SecureEnclave.P256.Signing.PrivateKey {
-        if let data = try keychainReadData(account: LicenseConfig.signingKeyAccount) {
-            let access = try makeKeyAccessControl()
-            return try SecureEnclave.P256.Signing.PrivateKey(dataRepresentation: data, accessControl: access)
-        }
-        let access = try makeKeyAccessControl()
-        let key = try SecureEnclave.P256.Signing.PrivateKey(compactRepresentable: false, accessControl: access)
-        try keychainSaveData(key.dataRepresentation, account: LicenseConfig.signingKeyAccount)
-        return key
+    if let data = try keychainReadData(account: LicenseConfig.signingKeyAccount) {
+        return try SecureEnclave.P256.Signing.PrivateKey(
+            dataRepresentation: data
+        )
     }
+
+    let access = try makeKeyAccessControl()
+
+    let key = try SecureEnclave.P256.Signing.PrivateKey(
+        compactRepresentable: false,
+        accessControl: access
+    )
+
+    try keychainSaveData(
+        key.dataRepresentation,
+        account: LicenseConfig.signingKeyAccount
+    )
+
+    return key
+}
 
     private func makeKeyAccessControl() throws -> SecAccessControl {
         var error: Unmanaged<CFError>?
