@@ -297,7 +297,7 @@ struct FeaturesView: View {
                 patchRow(name: "Aim Body", target: "FREE FIRE • VN", package: "Aim Body.3105")
                 patchRow(name: "Nhe Tam", target: "FREE FIRE • VN", package: "Nhe Tam.3105")
                 patchRow(name: "Aim Chest", target: "FREE FIRE • VN", package: "Aim Chest.3105")
-                patchRow(name: "Aim R8", target: "FREE FIRE • VN, package: "Aim R8.3105")
+                patchRow(name: "Aim R8", target: "FREE FIRE • VN", package: "Aim R8.3105")
                 patchRow(name: "Aim Magic", target: "FREE FIRE • VN", package: "Aim Magic.3105")
                 patchRow(name: "Neck Anten", target: "FREE FIRE • VN", package: "Neck Anten.3105")
                 patchRow(name: "Nhe Anten", target: "FREE FIRE • VN", package: "Nhe Anten.3105")
